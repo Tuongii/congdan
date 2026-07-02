@@ -23,10 +23,10 @@ export default function Home() {
           <div className="flex flex-col items-center justify-center text-center text-white">
             <div className="space-y-1">
               <h1 className="text-xl md:text-3xl font-extrabold uppercase tracking-wide drop-shadow-md">
-                Cổng Tiếp Công Dân Trực Tuyến
+                Phòng Tiếp công dân trực tuyến - Quân khu 2
               </h1>
               <p className="text-xs md:text-sm font-semibold text-qd-yellow tracking-wider uppercase mt-0.5">
-                Phòng Tiếp công dân trực tuyến - Quân khu 2
+                Cơ Quan Quân Sự — Bộ Quốc Phòng
               </p>
               <p className="text-[11px] md:text-xs text-slate-300 max-w-xl leading-relaxed mt-1">
                 Hệ thống tiếp nhận, xử lý kiến nghị, phản ánh và đặt lịch hẹn trực tuyến
