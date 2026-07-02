@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { lookupByTrackCode, TncdttEntry } from "../lib/api";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 const TRANG_THAI_CHON = {
   moi: { label: "🟡 Mới tiếp nhận", color: "bg-amber-50 text-amber-800 border-amber-200" },
@@ -10,24 +11,25 @@ const TRANG_THAI_CHON = {
   tu_choi: { label: "🔴 Từ chối", color: "bg-red-50 text-red-800 border-red-200" },
 };
 
-export default function TraCuuPage() {
+function TraCuuContent() {
+  const searchParams = useSearchParams();
+  const codeParam = searchParams.get("code");
+
   const [trackCode, setTrackCode] = useState("");
   const [entry, setEntry] = useState<TncdttEntry | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!trackCode.trim()) return;
-
+  const performSearch = async (code: string) => {
+    if (!code.trim()) return;
     setIsLoading(true);
     setError("");
     setEntry(null);
     setSearched(true);
 
     try {
-      const data = await lookupByTrackCode(trackCode.trim().toUpperCase());
+      const data = await lookupByTrackCode(code.trim().toUpperCase());
       if (data) {
         setEntry(data);
       } else {
@@ -38,6 +40,19 @@ export default function TraCuuPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (codeParam) {
+      setTrackCode(codeParam);
+      performSearch(codeParam);
+    }
+  }, [codeParam]);
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!trackCode.trim()) return;
+    performSearch(trackCode);
   };
 
   const formatDate = (dateStr: string | null) => {
@@ -217,5 +232,13 @@ export default function TraCuuPage() {
         <p>© 2026 Bản quyền thuộc về Bộ Quốc phòng</p>
       </footer>
     </main>
+  );
+}
+
+export default function TraCuuPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-50"><p className="text-sm text-slate-500">Đang tải...</p></div>}>
+      <TraCuuContent />
+    </Suspense>
   );
 }

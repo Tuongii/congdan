@@ -28,6 +28,13 @@ export default function CitizenForm() {
   const [trackCode, setTrackCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [origin, setOrigin] = useState("https://tncdtt-qd.io.vn");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
+  }, []);
 
   // 1. Gọi API lấy danh sách Tỉnh / Thành phố
   useEffect(() => {
@@ -116,6 +123,21 @@ export default function CitizenForm() {
             <div className="inline-block bg-slate-50 border border-slate-200 px-6 py-3 rounded-xl font-mono text-2xl font-bold text-qd-red tracking-widest shadow-inner">
               {trackCode}
             </div>
+          </div>
+
+          {/* Real-time QR Code for fast mobile lookup */}
+          <div className="flex flex-col items-center justify-center space-y-2 bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm">
+            <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+              Quét mã QR để tra cứu nhanh trên điện thoại:
+            </p>
+            <img 
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${origin}/tra-cuu?code=${trackCode}`)}`} 
+              alt="Mã QR tra cứu tiến độ đơn" 
+              className="w-36 h-36 border border-slate-200 rounded-lg p-1.5 bg-white shadow-sm transition-all duration-300 hover:scale-105"
+            />
+            <p className="text-[10px] text-slate-400">
+              Sử dụng Camera điện thoại hoặc Zalo để quét và theo dõi tiến trình đơn
+            </p>
           </div>
 
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-left space-y-2">
