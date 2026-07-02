@@ -26,7 +26,7 @@ export default function Home() {
                 Cổng Tiếp Công Dân Trực Tuyến
               </h1>
               <p className="text-xs md:text-sm font-semibold text-qd-yellow tracking-wider uppercase mt-0.5">
-                Cơ Quan Quân Sự — Bộ Quốc Phòng
+                Phòng Tiếp công dân trực tuyến - Quân khu 2
               </p>
               <p className="text-[11px] md:text-xs text-slate-300 max-w-xl leading-relaxed mt-1">
                 Hệ thống tiếp nhận, xử lý kiến nghị, phản ánh và đặt lịch hẹn trực tuyến
