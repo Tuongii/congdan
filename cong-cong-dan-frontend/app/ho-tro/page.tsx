@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 // Bạn hãy thay thế đường link Google Form của bạn vào đây
-const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdvY2tO2aUux-k1_pQj17Y3F-u2D5gR4l8qV4u7u0vB6QWd-A/viewform?embedded=true";
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdVR-hH8B7XfKXFR6IkJvsGlXsGJKloR8hsiIX-nCpRs63pqQ/viewform?embedded=true";
 
 export default function HoTroPage() {
   return (
