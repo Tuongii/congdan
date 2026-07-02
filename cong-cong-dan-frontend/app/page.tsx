@@ -28,7 +28,7 @@ export default function Home() {
               <p className="text-xs md:text-sm font-semibold text-qd-yellow tracking-wider uppercase mt-0.5">
                 Cơ Quan Quân Sự — Bộ Quốc Phòng
               </p>
-              <p className="text-[11px] md:text-xs text-slate-300 max-w-xl leading-relaxed mt-1">
+              <p className="text-[11px] md:text-xs text-slate-300 max-w-xl leading-relaxed mt-1 mx-auto">
                 Hệ thống tiếp nhận, xử lý kiến nghị, phản ánh và đặt lịch hẹn trực tuyến
                 của công dân đối với cơ quan quân sự các cấp.
               </p>
