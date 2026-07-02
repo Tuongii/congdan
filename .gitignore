@@ -1,0 +1,48 @@
+# OS/system files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Dependencies
+**/node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Next.js build
+**/cong-cong-dan-frontend/.next/
+**/cong-cong-dan-frontend/out/
+
+# Strapi build and cache
+**/he-thong-quan-tri-backend/.tmp/
+**/he-thong-quan-tri-backend/.cache/
+**/he-thong-quan-tri-backend/.strapi/
+**/he-thong-quan-tri-backend/dist/
+**/he-thong-quan-tri-backend/build/
+**/he-thong-quan-tri-backend/public/uploads/*
+!**/he-thong-quan-tri-backend/public/uploads/.gitkeep
+**/he-thong-quan-tri-backend/.strapi-updater.json
+**/he-thong-quan-tri-backend/.strapi-cloud.json
+
+# Environment secrets (DO NOT push these to public repository)
+**/.env
+**/.env.local
+**/.env.production
+**/.env.development
+**/.env.staging
+**/.env.*
+
+# Logs and databases
+*.log
+*.sqlite
+*.sqlite3
+**/*.db
+**/*.db-journal
+**/*.db-shm
+**/*.db-wal

@@ -1,0 +1,60 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tncdtts",
+  "info": {
+    "singularName": "tncdtt",
+    "pluralName": "tncdtts",
+    "displayName": "TNCDTT",
+    "description": "Đơn tiếp công dân trực tuyến"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "hoTen": {
+      "type": "string",
+      "required": true
+    },
+    "soDienThoai": {
+      "type": "string",
+      "required": true
+    },
+    "ngaySinh": {
+      "type": "date",
+      "required": true
+    },
+    "tinhThanh": {
+      "type": "string",
+      "required": true
+    },
+    "xaPhuong": {
+      "type": "string",
+      "required": true
+    },
+    "ngayNhapNgu": {
+      "type": "date"
+    },
+    "donViCongTac": {
+      "type": "string"
+    },
+    "noiDung": {
+      "type": "text",
+      "required": true
+    },
+    "maTraCuu": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "trangThai": {
+      "type": "enumeration",
+      "enum": ["moi", "dang_xu_ly", "da_giai_quyet", "tu_choi"],
+      "default": "moi",
+      "required": true
+    },
+    "phanHoi": {
+      "type": "text"
+    }
+  }
+}
