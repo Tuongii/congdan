@@ -28,7 +28,7 @@ export default function CitizenForm() {
   const [trackCode, setTrackCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [origin, setOrigin] = useState("https://phongtiepdantructruyen-qk2.top");
+  const [origin, setOrigin] = useState("https://tncdtt-qd.io.vn");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -130,9 +130,9 @@ export default function CitizenForm() {
             <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">
               Quét mã QR để tra cứu nhanh trên điện thoại:
             </p>
-            <img 
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${origin}/tra-cuu?code=${trackCode}`)}`} 
-              alt="Mã QR tra cứu tiến độ đơn" 
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${origin}/tra-cuu?code=${trackCode}`)}`}
+              alt="Mã QR tra cứu tiến độ đơn"
               className="w-36 h-36 border border-slate-200 rounded-lg p-1.5 bg-white shadow-sm transition-all duration-300 hover:scale-105"
             />
             <p className="text-[10px] text-slate-400">
@@ -196,8 +196,8 @@ export default function CitizenForm() {
           className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all duration-200 shadow-sm hover:shadow-md"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12.49 10.272v-.45h1.347v6.322h-1.347v-.45a2.876 2.876 0 01-1.741.59c-1.787 0-3.235-1.49-3.235-3.328s1.448-3.328 3.235-3.328c.653 0 1.26.222 1.741.644zm-1.601.72c-1.168 0-2.044.89-2.044 2.058s.876 2.058 2.044 2.058c1.168 0 2.044-.89 2.044-2.058s-.876-2.058-2.044-2.058z"/>
-            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" fillOpacity="0" stroke="currentColor" strokeWidth="1.5"/>
+            <path d="M12.49 10.272v-.45h1.347v6.322h-1.347v-.45a2.876 2.876 0 01-1.741.59c-1.787 0-3.235-1.49-3.235-3.328s1.448-3.328 3.235-3.328c.653 0 1.26.222 1.741.644zm-1.601.72c-1.168 0-2.044.89-2.044 2.058s.876 2.058 2.044 2.058c1.168 0 2.044-.89 2.044-2.058s-.876-2.058-2.044-2.058z" />
+            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" fillOpacity="0" stroke="currentColor" strokeWidth="1.5" />
           </svg>
           Zalo: 0912.345.678
         </a>
