@@ -29,12 +29,7 @@ export default function HoTroPage() {
         <CitizenForm />
       </div>
 
-      {/* Footer chính quy bảo mật */}
-      <footer className="mt-8 text-center text-[11px] text-slate-400 space-y-1">
-        <p className="font-semibold uppercase tracking-wider text-slate-500">Hệ thống Tiếp công dân trực tuyến Quân đội nhân dân Việt Nam</p>
-        <p>Bảo mật thông tin mã hóa đầu cuối dữ liệu công dân quốc gia theo tiêu chuẩn thông tin quân sự</p>
-        <p>© 2026 Bản quyền thuộc về Bộ Quốc phòng</p>
-      </footer>
+
     </main>
   );
 }

@@ -477,6 +477,38 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiTinNoiBatTinNoiBat extends Struct.CollectionTypeSchema {
+  collectionName: 'tin_noi_bats';
+  info: {
+    description: 'Qu\u1EA3n l\u00FD tin t\u1EE9c n\u1ED5i b\u1EADt hi\u1EC3n th\u1ECB tr\u00EAn trang ch\u1EE7';
+    displayName: 'Tin n\u1ED5i b\u1EADt';
+    pluralName: 'tin-noi-bats';
+    singularName: 'tin-noi-bat';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    hinhAnh: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tin-noi-bat.tin-noi-bat'
+    > &
+      Schema.Attribute.Private;
+    moTa: Schema.Attribute.Text & Schema.Attribute.Required;
+    ngayDang: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    tieuDe: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiTncdttTncdtt extends Struct.CollectionTypeSchema {
   collectionName: 'tncdtts';
   info: {
@@ -493,7 +525,25 @@ export interface ApiTncdttTncdtt extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     donViCongTac: Schema.Attribute.String;
+    gioHenMongMuon: Schema.Attribute.String;
+    guiHo_diaChi: Schema.Attribute.String;
+    guiHo_hoTen: Schema.Attribute.String;
+    guiHo_quanHe: Schema.Attribute.String;
+    guiHo_soCCCD: Schema.Attribute.String;
+    guiHo_soDienThoai: Schema.Attribute.String;
+    hinhThucTiep: Schema.Attribute.Enumeration<['truc_tiep', 'truc_tuyen']>;
     hoTen: Schema.Attribute.String & Schema.Attribute.Required;
+    isGuiHo: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    loaiYeuCau: Schema.Attribute.Enumeration<
+      [
+        'kien_nghi_phan_anh',
+        'che_do_chinh_sach',
+        'xac_nhan_cong_tac',
+        'dat_lich_hen',
+      ]
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'kien_nghi_phan_anh'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -503,12 +553,17 @@ export interface ApiTncdttTncdtt extends Struct.CollectionTypeSchema {
     maTraCuu: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
+    ngayHenMongMuon: Schema.Attribute.Date;
     ngayNhapNgu: Schema.Attribute.Date;
     ngaySinh: Schema.Attribute.Date & Schema.Attribute.Required;
     noiDung: Schema.Attribute.Text & Schema.Attribute.Required;
     phanHoi: Schema.Attribute.Text;
     publishedAt: Schema.Attribute.DateTime;
+    soCCCD: Schema.Attribute.String;
     soDienThoai: Schema.Attribute.String & Schema.Attribute.Required;
+    soHieuSiQuan: Schema.Attribute.String;
+    taiLieuDinhKem: Schema.Attribute.Media<'images' | 'files' | 'videos', true>;
+    tieuDe: Schema.Attribute.String & Schema.Attribute.Required;
     tinhThanh: Schema.Attribute.String & Schema.Attribute.Required;
     trangThai: Schema.Attribute.Enumeration<
       ['moi', 'dang_xu_ly', 'da_giai_quyet', 'tu_choi']
@@ -519,6 +574,45 @@ export interface ApiTncdttTncdtt extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     xaPhuong: Schema.Attribute.String & Schema.Attribute.Required;
+    zoomLink: Schema.Attribute.String;
+  };
+}
+
+export interface ApiVanBanPhapQuyVanBanPhapQuy
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'van_ban_phap_quys';
+  info: {
+    description: 'Qu\u1EA3n l\u00FD t\u00E0i li\u1EC7u ph\u00E1p lu\u1EADt v\u00E0 quy tr\u00ECnh h\u01B0\u1EDBng d\u1EABn ti\u1EBFp c\u00F4ng d\u00E2n';
+    displayName: 'V\u0103n b\u1EA3n ph\u00E1p quy';
+    pluralName: 'van-ban-phap-quys';
+    singularName: 'van-ban-phap-quy';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    hieuLuc: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'C\u00F2n hi\u1EC7u l\u1EF1c'>;
+    loaiVanBan: Schema.Attribute.Enumeration<['phap_ly', 'huong_dan']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'phap_ly'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::van-ban-phap-quy.van-ban-phap-quy'
+    > &
+      Schema.Attribute.Private;
+    ngayBanHanh: Schema.Attribute.Date;
+    publishedAt: Schema.Attribute.DateTime;
+    tepVanBan: Schema.Attribute.Media<'files'> & Schema.Attribute.Required;
+    tieuDe: Schema.Attribute.String & Schema.Attribute.Required;
+    trichYeu: Schema.Attribute.Text & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1034,7 +1128,9 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::tin-noi-bat.tin-noi-bat': ApiTinNoiBatTinNoiBat;
       'api::tncdtt.tncdtt': ApiTncdttTncdtt;
+      'api::van-ban-phap-quy.van-ban-phap-quy': ApiVanBanPhapQuyVanBanPhapQuy;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

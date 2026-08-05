@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "van_ban_phap_quys",
+  "info": {
+    "singularName": "van-ban-phap-quy",
+    "pluralName": "van-ban-phap-quys",
+    "displayName": "Văn bản pháp quy",
+    "description": "Quản lý tài liệu pháp luật và quy trình hướng dẫn tiếp công dân"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "tieuDe": {
+      "type": "string",
+      "required": true
+    },
+    "trichYeu": {
+      "type": "text",
+      "required": true
+    },
+    "ngayBanHanh": {
+      "type": "date"
+    },
+    "hieuLuc": {
+      "type": "string",
+      "default": "Còn hiệu lực"
+    },
+    "loaiVanBan": {
+      "type": "enumeration",
+      "enum": [
+        "phap_ly",
+        "huong_dan"
+      ],
+      "default": "phap_ly",
+      "required": true
+    },
+    "tepVanBan": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "files"
+      ]
+    }
+  }
+}

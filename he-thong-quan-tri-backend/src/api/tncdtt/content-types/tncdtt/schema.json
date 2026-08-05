@@ -38,9 +38,34 @@
     "donViCongTac": {
       "type": "string"
     },
+    "loaiYeuCau": {
+      "type": "enumeration",
+      "enum": ["kien_nghi_phan_anh", "che_do_chinh_sach", "xac_nhan_cong_tac", "dat_lich_hen"],
+      "default": "kien_nghi_phan_anh",
+      "required": true
+    },
+    "tieuDe": {
+      "type": "string",
+      "required": true
+    },
     "noiDung": {
       "type": "text",
       "required": true
+    },
+    "taiLieuDinhKem": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images", "files", "videos"]
+    },
+    "ngayHenMongMuon": {
+      "type": "date"
+    },
+    "gioHenMongMuon": {
+      "type": "string"
+    },
+    "hinhThucTiep": {
+      "type": "enumeration",
+      "enum": ["truc_tiep", "truc_tuyen"]
     },
     "maTraCuu": {
       "type": "string",
@@ -55,6 +80,35 @@
     },
     "phanHoi": {
       "type": "text"
+    },
+    "zoomLink": {
+      "type": "string"
+    },
+    "isGuiHo": {
+      "type": "boolean",
+      "default": false
+    },
+    "guiHo_hoTen": {
+      "type": "string"
+    },
+    "guiHo_soDienThoai": {
+      "type": "string"
+    },
+    "guiHo_diaChi": {
+      "type": "string"
+    },
+    "guiHo_quanHe": {
+      "type": "string"
+    },
+    "guiHo_soCCCD": {
+      "type": "string"
+    },
+    "soCCCD": {
+      "type": "string"
+    },
+    "soHieuSiQuan": {
+      "type": "string"
     }
   }
 }
+

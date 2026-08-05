@@ -20,6 +20,24 @@ function TraCuuContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState("");
+  const [history, setHistory] = useState<{code: string, title: string, date: string}[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("citizen_submissions");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setTimeout(() => setHistory(parsed), 0);
+        } catch (_) {}
+      }
+    }
+  }, []);
+
+  const clearHistory = () => {
+    localStorage.removeItem("citizen_submissions");
+    setHistory([]);
+  };
 
   const performSearch = async (code: string) => {
     if (!code.trim()) return;
@@ -44,7 +62,7 @@ function TraCuuContent() {
 
   useEffect(() => {
     if (codeParam) {
-      setTrackCode(codeParam);
+      setTimeout(() => setTrackCode(codeParam), 0);
       performSearch(codeParam);
     }
   }, [codeParam]);
@@ -53,11 +71,6 @@ function TraCuuContent() {
     e.preventDefault();
     if (!trackCode.trim()) return;
     performSearch(trackCode);
-  };
-
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "—";
-    return new Date(dateStr).toLocaleDateString("vi-VN");
   };
 
   const formatDateTime = (dateStr: string | null) => {
@@ -80,16 +93,16 @@ function TraCuuContent() {
         </Link>
       </div>
 
-      <div className="flex-grow flex items-center justify-center py-2">
+      <div className="flex-grow flex flex-col items-center justify-center py-2">
         <div className="max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
           {/* Header */}
           <div className="bg-qd-green p-6 text-center text-white relative border-b-4 border-qd-yellow">
             <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-            <h2 className="text-xl md:text-2xl font-bold uppercase tracking-wide text-white drop-shadow-sm">
+            <h1 className="text-xl md:text-2xl font-bold uppercase tracking-wide text-white drop-shadow-sm">
               Tra Cứu Tiến Độ Xử Lý Đơn
-            </h2>
+            </h1>
             <p className="text-xs md:text-sm font-semibold text-qd-yellow tracking-wide uppercase mt-1">
-              Cơ Quan Quân Sự - Bộ Quốc Phòng
+              Cục Chính Trị - Quân Khu 2
             </p>
           </div>
 
@@ -179,11 +192,36 @@ function TraCuuContent() {
                   </div>
                 </div>
 
+                {/* Khối Họp Trực Tuyến (Zoom / Jitsi) */}
+                {entry.zoomLink && (
+                  <div className="bg-blue-50/80 border border-blue-200 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-bold text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>📹</span> Phòng họp trực tuyến trực tiếp
+                      </h4>
+                      <p className="text-[11px] text-blue-800 leading-relaxed">
+                        Cán bộ tiếp dân đã thiết lập phòng họp trực tuyến cho hồ sơ này. Vui lòng bấm nút tham gia để kết nối.
+                      </p>
+                    </div>
+                    <a
+                      href={entry.zoomLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md whitespace-nowrap self-stretch sm:self-auto justify-center transition-all duration-200 hover:scale-105"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      Vào Phòng Họp Trực Tuyến
+                    </a>
+                  </div>
+                )}
+
                 {/* Khối 2: Chi tiết phản hồi từ cơ quan */}
                 {entry.phanHoi ? (
                   <div className="bg-emerald-50/50 border border-emerald-200 rounded-xl p-4 space-y-2">
                     <h3 className="text-xs font-bold text-emerald-950 uppercase tracking-wider flex items-center gap-1.5">
-                      <span>🏛️</span> Phản hồi chính thức từ cơ quan quân sự:
+                      <span>🏛️</span> Phản hồi chính thức từ Cục Chính Trị - Quân Khu 2:
                     </h3>
                     <div className="text-sm text-emerald-900 whitespace-pre-line leading-relaxed pl-5">
                       {entry.phanHoi}
@@ -215,6 +253,18 @@ function TraCuuContent() {
                       <span className="text-slate-500 block mb-0.5">Số điện thoại:</span>
                       <span className="font-semibold text-slate-800">{entry.soDienThoai}</span>
                     </div>
+                    {entry.soCCCD && (
+                      <div>
+                        <span className="text-slate-500 block mb-0.5">Số thẻ CCCD:</span>
+                        <span className="font-semibold text-slate-800 font-mono">{entry.soCCCD}</span>
+                      </div>
+                    )}
+                    {entry.soHieuSiQuan && (
+                      <div>
+                        <span className="text-slate-500 block mb-0.5">Số hiệu sĩ quan:</span>
+                        <span className="font-semibold text-slate-800 font-mono">{entry.soHieuSiQuan}</span>
+                      </div>
+                    )}
                     <div className="sm:col-span-2">
                       <span className="text-slate-500 block mb-0.5">Nội dung kiến nghị:</span>
                       <p className="font-semibold text-slate-700 whitespace-pre-line">{entry.noiDung}</p>
@@ -225,12 +275,61 @@ function TraCuuContent() {
             )}
           </div>
         </div>
+
+        {/* Lịch sử gửi yêu cầu gần đây */}
+        {history.length > 0 && (
+          <div className="max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-5 mt-4 animate-fadeIn text-xs">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
+              <h3 className="font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <span>📜</span> Lịch sử yêu cầu đã gửi
+              </h3>
+              <button
+                type="button"
+                onClick={clearHistory}
+                className="text-[10px] text-red-500 hover:text-red-700 font-semibold transition-colors"
+              >
+                Xóa lịch sử
+              </button>
+            </div>
+            <div className="grid grid-cols-1 gap-2 max-h-[220px] overflow-y-auto pr-1">
+              {history.map((item) => (
+                <div
+                  key={item.code}
+                  onClick={() => {
+                    setTrackCode(item.code);
+                    performSearch(item.code);
+                  }}
+                  className={`border rounded-xl p-3 flex justify-between items-center gap-4 cursor-pointer transition-all duration-200 hover:shadow-sm ${
+                    trackCode === item.code
+                      ? "border-qd-green bg-emerald-50/30"
+                      : "border-slate-200 hover:border-qd-green/60 hover:bg-slate-50/50"
+                  }`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <span className="font-mono font-bold text-qd-green bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                      {item.code}
+                    </span>
+                    <span className="text-xs font-bold text-slate-800 ml-2 block sm:inline truncate max-w-[280px]">
+                      {item.title}
+                    </span>
+                    <span className="text-[10px] text-slate-400 block mt-1">
+                      Ngày gửi: {new Date(item.date).toLocaleDateString("vi-VN")}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="bg-slate-100 hover:bg-qd-green hover:text-white text-slate-600 font-bold px-3 py-1.5 rounded-lg text-[10px] transition-all duration-200"
+                  >
+                    Xem tiến độ
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      <footer className="mt-8 text-center text-[11px] text-slate-400 space-y-1">
-        <p className="font-semibold uppercase tracking-wider text-slate-500">Hệ thống Tiếp công dân trực tuyến Quân đội nhân dân Việt Nam</p>
-        <p>© 2026 Bản quyền thuộc về Bộ Quốc phòng</p>
-      </footer>
+
     </main>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, use, useRef } from "react";
 import { fetchSubmissionById, updateSubmissionStatusAndReply, TncdttEntry } from "../../lib/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,6 +24,88 @@ export default function PhanHoiPage({ params }: { params: Promise<{ documentId: 
 
   const [trangThai, setTrangThai] = useState<"moi" | "dang_xu_ly" | "da_giai_quyet" | "tu_choi">("moi");
   const [replyContent, setReplyContent] = useState("");
+  const [zoomLink, setZoomLink] = useState("");
+
+  // Speech Recognition States
+  const [hasSpeechSupport, setHasSpeechSupport] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const initialTextRef = useRef<string>("");
+  const silenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetSilenceTimeout = () => {
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+    }
+    silenceTimeoutRef.current = setTimeout(() => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    }, 5000);
+  };
+
+  const clearSilenceTimeout = () => {
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+      silenceTimeoutRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        setHasSpeechSupport(true);
+        const rec = new SpeechRecognition();
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.lang = "vi-VN";
+
+        rec.onresult = (event: any) => {
+          resetSilenceTimeout();
+          
+          let sessionTranscript = "";
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            sessionTranscript += event.results[i][0].transcript;
+          }
+          const baseText = initialTextRef.current;
+          setReplyContent(baseText + (baseText ? " " : "") + sessionTranscript.trim());
+        };
+
+        rec.onend = () => {
+          setIsListening(false);
+          clearSilenceTimeout();
+        };
+
+        rec.onerror = (err: any) => {
+          console.error("Speech recognition error", err);
+          setIsListening(false);
+          clearSilenceTimeout();
+        };
+
+        recognitionRef.current = rec;
+      }
+    }
+  }, []);
+
+  const toggleListen = () => {
+    if (!recognitionRef.current) return;
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      clearSilenceTimeout();
+    } else {
+      initialTextRef.current = replyContent;
+      setIsListening(true);
+      resetSilenceTimeout();
+      try {
+        recognitionRef.current.start();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
 
   useEffect(() => {
     async function loadDetail() {
@@ -34,6 +116,7 @@ export default function PhanHoiPage({ params }: { params: Promise<{ documentId: 
         setEntry(data);
         setTrangThai(data.trangThai);
         setReplyContent(data.phanHoi || "");
+        setZoomLink(data.zoomLink || "");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Lỗi khi tải chi tiết đơn.");
       } finally {
@@ -50,7 +133,7 @@ export default function PhanHoiPage({ params }: { params: Promise<{ documentId: 
     setSuccessMsg("");
 
     try {
-      await updateSubmissionStatusAndReply(documentId, trangThai, replyContent);
+      await updateSubmissionStatusAndReply(documentId, trangThai, replyContent, zoomLink);
       setSuccessMsg("Đã cập nhật trạng thái và lưu phản hồi thành công!");
       
       // Tải lại dữ liệu mới nhất
@@ -138,9 +221,39 @@ export default function PhanHoiPage({ params }: { params: Promise<{ documentId: 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Cột 1: Thông tin chi tiết đơn (lg:col-span-7) */}
           <div className="lg:col-span-7 bg-white rounded-2xl shadow-xl border border-slate-100 p-6 space-y-6">
+            {/* Nếu là gửi hộ, hiển thị thông tin người gửi hộ */}
+            {entry?.isGuiHo && (
+              <>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-l-4 border-qd-red pl-2.5 mb-4">
+                    Thông tin người gửi hộ (Đại diện)
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4 text-xs bg-amber-50/30 p-4 rounded-xl border border-amber-100/50">
+                    <div>
+                      <span className="text-slate-500 block mb-0.5">Họ và tên người gửi hộ:</span>
+                      <span className="font-bold text-slate-800 text-sm">{entry?.guiHo_hoTen}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block mb-0.5">Số điện thoại người gửi hộ:</span>
+                      <span className="font-mono font-semibold text-slate-800 text-sm">{entry?.guiHo_soDienThoai}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block mb-0.5">Nơi ở hiện tại:</span>
+                      <span className="font-semibold text-slate-800">{entry?.guiHo_diaChi}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block mb-0.5">Quan hệ với người nhờ gửi đơn:</span>
+                      <span className="font-semibold text-slate-800">{entry?.guiHo_quanHe}</span>
+                    </div>
+                  </div>
+                </div>
+                <hr className="border-slate-100" />
+              </>
+            )}
+
             <div>
               <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-l-4 border-qd-red pl-2.5 mb-4">
-                Thông tin người gửi kiến nghị
+                {entry?.isGuiHo ? "Thông tin người nhờ gửi đơn" : "Thông tin người gửi kiến nghị"}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4 text-xs">
                 <div>
@@ -152,10 +265,14 @@ export default function PhanHoiPage({ params }: { params: Promise<{ documentId: 
                   <span className="font-mono font-semibold text-slate-800 text-sm">{entry?.soDienThoai}</span>
                 </div>
                 <div>
+                  <span className="text-slate-500 block mb-0.5">Số thẻ CCCD:</span>
+                  <span className="font-mono font-semibold text-slate-800 text-sm">{entry?.soCCCD || "—"}</span>
+                </div>
+                <div>
                   <span className="text-slate-500 block mb-0.5">Ngày sinh:</span>
                   <span className="font-semibold text-slate-800">{formatDate(entry?.ngaySinh || null)}</span>
                 </div>
-                <div>
+                <div className="sm:col-span-2">
                   <span className="text-slate-500 block mb-0.5">Địa chỉ thường trú:</span>
                   <span className="font-semibold text-slate-800">
                     {entry?.xaPhuong}, {entry?.tinhThanh}
@@ -176,8 +293,43 @@ export default function PhanHoiPage({ params }: { params: Promise<{ documentId: 
                   <span className="font-semibold text-slate-800">{formatDate(entry?.ngayNhapNgu || null)}</span>
                 </div>
                 <div>
+                  <span className="text-slate-500 block mb-0.5">Số hiệu sĩ quan:</span>
+                  <span className="font-mono font-semibold text-slate-800">{entry?.soHieuSiQuan || "—"}</span>
+                </div>
+                <div className="sm:col-span-2">
                   <span className="text-slate-500 block mb-0.5">Đơn vị công tác trước đây:</span>
                   <span className="font-semibold text-slate-800">{entry?.donViCongTac || "—"}</span>
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-slate-100" />
+
+            {/* Loại yêu cầu & Tiêu đề */}
+            <div>
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-l-4 border-qd-red pl-2.5 mb-4">
+                Phân loại & Tiêu đề đơn
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4 text-xs">
+                <div>
+                  <span className="text-slate-500 block mb-0.5">Loại yêu cầu:</span>
+                  <span className={`inline-block text-[11px] font-bold px-2.5 py-1 rounded-lg border ${
+                    entry?.loaiYeuCau === "kien_nghi_phan_anh" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                    entry?.loaiYeuCau === "che_do_chinh_sach" ? "bg-amber-50 text-amber-700 border-amber-200" :
+                    entry?.loaiYeuCau === "xac_nhan_cong_tac" ? "bg-blue-50 text-blue-700 border-blue-200" :
+                    entry?.loaiYeuCau === "dat_lich_hen" ? "bg-purple-50 text-purple-700 border-purple-200" :
+                    "bg-slate-50 text-slate-600 border-slate-200"
+                  }`}>
+                    {entry?.loaiYeuCau === "kien_nghi_phan_anh" ? "📋 Kiến nghị / Phản ánh" :
+                     entry?.loaiYeuCau === "che_do_chinh_sach" ? "🎖️ Chế độ chính sách" :
+                     entry?.loaiYeuCau === "xac_nhan_cong_tac" ? "💂 Xác nhận công tác" :
+                     entry?.loaiYeuCau === "dat_lich_hen" ? "📅 Đặt lịch hẹn" :
+                     entry?.loaiYeuCau}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block mb-0.5">Tiêu đề đơn:</span>
+                  <span className="font-bold text-slate-800">{entry?.tieuDe || "—"}</span>
                 </div>
               </div>
             </div>
@@ -195,6 +347,74 @@ export default function PhanHoiPage({ params }: { params: Promise<{ documentId: 
                 Được tiếp nhận lúc: {formatDateTime(entry?.createdAt || null)}
               </div>
             </div>
+
+            {/* Tài liệu đính kèm */}
+            {entry?.taiLieuDinhKem && entry.taiLieuDinhKem.length > 0 && (
+              <>
+                <hr className="border-slate-100" />
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-l-4 border-blue-500 pl-2.5 mb-3">
+                    📎 Tài liệu đính kèm ({entry.taiLieuDinhKem.length} tệp)
+                  </h3>
+                  <div className="space-y-2">
+                    {entry.taiLieuDinhKem.map((file) => {
+                      const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+                      const fileUrl = file.url.startsWith("http") ? file.url : `${STRAPI_URL}${file.url}`;
+                      const icon = file.mime.startsWith("image/") ? "🖼️" : file.mime.startsWith("video/") ? "🎬" : file.mime === "application/pdf" ? "📄" : "📎";
+                      return (
+                        <a
+                          key={file.id}
+                          href={fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-xs hover:bg-blue-50 hover:border-blue-200 transition-colors group"
+                        >
+                          <span className="text-base">{icon}</span>
+                          <span className="font-medium text-slate-700 group-hover:text-blue-700 truncate flex-1">{file.name}</span>
+                          <span className="text-slate-400 text-[10px] flex-shrink-0">
+                            {(file.size / 1024).toFixed(0)} KB
+                          </span>
+                          <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Thông tin đặt lịch hẹn */}
+            {entry?.loaiYeuCau === "dat_lich_hen" && (
+              <>
+                <hr className="border-slate-100" />
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-l-4 border-purple-500 pl-2.5 mb-4">
+                    📅 Thông tin đặt lịch hẹn
+                  </h3>
+                  <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-3 gap-x-4 text-xs">
+                      <div>
+                        <span className="text-slate-500 block mb-0.5">Ngày hẹn mong muốn:</span>
+                        <span className="font-bold text-purple-700 text-sm">{formatDate(entry?.ngayHenMongMuon || null)}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 block mb-0.5">Giờ hẹn mong muốn:</span>
+                        <span className="font-bold text-purple-700 text-sm">{entry?.gioHenMongMuon || "—"}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 block mb-0.5">Hình thức tiếp:</span>
+                        <span className="font-bold text-purple-700">
+                          {entry?.hinhThucTiep === "truc_tiep" ? "🏢 Trực tiếp tại cơ quan" :
+                           entry?.hinhThucTiep === "truc_tuyen" ? "💻 Trực tuyến (video call)" : "—"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Cột 2: Form phản hồi và Trạng thái (lg:col-span-5) */}
@@ -244,9 +464,37 @@ export default function PhanHoiPage({ params }: { params: Promise<{ documentId: 
 
               {/* Nội dung phản hồi */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Nội dung phản hồi công dân *
-                </label>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Nội dung phản hồi công dân *
+                  </label>
+                  {hasSpeechSupport && (
+                    <button
+                      type="button"
+                      onClick={toggleListen}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase transition-all duration-300 cursor-pointer ${
+                        isListening
+                          ? "bg-red-50 text-red-600 border border-red-200"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200"
+                      }`}
+                    >
+                      {isListening ? (
+                        <>
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                          </span>
+                          <span>Đang nghe...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>🎤</span>
+                          <span>Nói để phản hồi</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
                 <textarea
                   rows={6}
                   value={replyContent}
@@ -257,6 +505,75 @@ export default function PhanHoiPage({ params }: { params: Promise<{ documentId: 
                 ></textarea>
                 <p className="text-[10px] text-slate-500 mt-1.5 leading-relaxed">
                   📢 <strong>Chú ý:</strong> Nội dung phản hồi này sẽ được hiển thị ngay lập tức khi công dân thực hiện tra cứu bằng mã số của họ trên cổng thông tin trực tuyến.
+                </p>
+              </div>
+
+              {/* Đường dẫn họp trực tuyến (Zoom / Jitsi) */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  Đường dẫn họp trực tuyến (Zoom / Jitsi / Meet)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={zoomLink}
+                    onChange={(e) => setZoomLink(e.target.value)}
+                    placeholder="Dán link phòng họp Zoom hoặc Google Meet..."
+                    className="flex-grow bg-slate-50 text-slate-900 border border-slate-200 focus:bg-white focus:border-qd-green p-3 rounded-xl text-xs transition-all duration-200 outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (entry) {
+                        const newLink = `https://meet.ffmuc.net/TCDTT_QK2_${entry.maTraCuu}`;
+                        setZoomLink(newLink);
+                        try {
+                          setIsSaving(true);
+                          setError("");
+                          setSuccessMsg("");
+                          await updateSubmissionStatusAndReply(documentId, trangThai, replyContent, newLink);
+                          setSuccessMsg("Đã tạo nhanh phòng họp Jitsi và lưu lại thành công!");
+                          const updated = await fetchSubmissionById(documentId);
+                          setEntry(updated);
+                        } catch (err) {
+                          setError("Lỗi khi tự động lưu phòng họp trực tuyến.");
+                        } finally {
+                          setIsSaving(false);
+                        }
+                      }
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-xl text-[10px] whitespace-nowrap transition-colors duration-200"
+                  >
+                    Tạo nhanh Jitsi
+                  </button>
+                </div>
+                
+                {zoomLink && (
+                  <div className="mt-2.5 space-y-2">
+                    <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl p-3">
+                      <span className="text-[10px] font-bold text-blue-900 uppercase">
+                        Đường dẫn đã được thiết lập
+                      </span>
+                      <a
+                        href={zoomLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-[10px] flex items-center gap-1 transition-all duration-200 hover:scale-105"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Vào phòng họp trực tuyến (Cán bộ)
+                      </a>
+                    </div>
+                    <p className="text-[10px] text-red-600 font-extrabold block">
+                      ⚠️ Trước khi tham gia cuộc họp hãy đảm bảo đã nhấn nút cập nhật và phản hồi bên dưới
+                    </p>
+                  </div>
+                )}
+                
+                <p className="text-[10px] text-slate-500 mt-1.5 leading-relaxed">
+                  💡 <strong>Gợi ý:</strong> Bạn có thể tự dán link Zoom của mình hoặc bấm <strong>"Tạo nhanh Jitsi"</strong> để tạo phòng họp mở miễn phí tức thì và tự động lưu.
                 </p>
               </div>
 

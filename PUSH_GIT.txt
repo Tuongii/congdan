@@ -1,0 +1,74 @@
+Khi bạn sửa code trên máy local, cần **deploy lại lên VPS**. Có 2 cách:
+
+## Cách 1: Script deploy nhanh (đơn giản nhất)
+
+Tạo script này, mỗi khi sửa code xong chỉ cần chạy 1 lệnh:
+
+Chạy trên **PowerShell máy local**:
+```powershell
+# Upload frontend mới
+scp -r c:\Users\tuong\Downloads\TCDTT\cong-cong-dan-frontend\app root@180.93.42.245:/var/www/phongtiepdantructruyen/frontend/
+
+# SSH vào VPS rebuild & restart
+ssh root@180.93.42.245 "cd /var/www/phongtiepdantructruyen/frontend && npm run build && pm2 restart nextjs-frontend"
+```
+
+Nếu sửa **backend**:
+```powershell
+scp -r c:\Users\tuong\Downloads\TCDTT\he-thong-quan-tri-backend\src root@180.93.42.245:/var/www/phongtiepdantructruyen/backend/
+
+ssh root@180.93.42.245 "cd /var/www/phongtiepdantructruyen/backend && npm run build && pm2 restart strapi-backend"
+```
+
+---
+
+## Cách 2: Dùng Git (chuyên nghiệp hơn)
+
+### Bước 1: Tạo Git repo (1 lần duy nhất)
+
+Trên máy local:
+```powershell
+cd c:\Users\tuong\Downloads\TCDTT\cong-cong-dan-frontend
+git init
+git add .
+git commit -m "init"
+```
+
+Tạo repo trên **GitHub**, rồi push:
+```powershell
+git remote add origin https://github.com/YOUR_USERNAME/cong-dan-frontend.git
+git push -u origin main
+```
+
+### Bước 2: Clone trên VPS (1 lần)
+```bash
+cd /var/www/phongtiepdantructruyen
+rm -rf frontend
+git clone https://github.com/YOUR_USERNAME/cong-dan-frontend.git frontend
+cd frontend && npm install && npm run build
+```
+
+### Bước 3: Mỗi khi sửa code
+Trên máy local:
+```powershell
+git add . && git commit -m "fix giao dien" && git push
+```
+
+Trên VPS:
+```bash
+cd /var/www/phongtiepdantructruyen/frontend
+git pull && npm run build && pm2 restart nextjs-frontend
+```
+
+---
+
+## Tóm tắt
+
+| | Cách 1 (SCP) | Cách 2 (Git) |
+|---|---|---|
+| Độ khó | Dễ | Trung bình |
+| Tốc độ | Nhanh | Nhanh |
+| Theo dõi thay đổi | ❌ | ✅ |
+| Phù hợp | Sửa nhanh, ít thay đổi | Dự án lâu dài |
+
+Bạn muốn dùng cách nào? Tôi sẽ thiết lập chi tiết.

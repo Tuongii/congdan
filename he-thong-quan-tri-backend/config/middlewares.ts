@@ -3,7 +3,30 @@ import type { Core } from '@strapi/strapi';
 const config: Core.Config.Middlewares = [
     'strapi::logger',
     'strapi::errors',
-    'strapi::security',
+    {
+        name: 'strapi::security',
+        config: {
+            contentSecurityPolicy: {
+                useDefaults: true,
+                directives: {
+                    'connect-src': ["'self'", 'https:', 'http:', 'wss:', 'ws:'],
+                    'img-src': ["'self'", 'data:', 'blob:', 'market-assets.strapi.io', 'https:'],
+                    'media-src': ["'self'", 'data:', 'blob:', 'https:'],
+                    upgradeInsecureRequests: null,
+                },
+            },
+            frameguard: {
+                action: 'deny',
+            },
+            hsts: {
+                maxAge: 31536000, // 1 năm
+                includeSubDomains: true,
+                preload: true,
+            },
+            xssFilter: true,
+            noSniff: true,
+        },
+    },
     {
         name: 'strapi::cors',
         config: {
@@ -16,8 +39,6 @@ const config: Core.Config.Middlewares = [
                 'http://www.phongtiepdantructruyen-qk2.top',
                 'https://api.phongtiepdantructruyen-qk2.top',
                 'http://api.phongtiepdantructruyen-qk2.top',
-                'https://om3kr5lpjy.tenten.vn',
-                'http://om3kr5lpjy.tenten.vn'
             ],
             methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
             headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
