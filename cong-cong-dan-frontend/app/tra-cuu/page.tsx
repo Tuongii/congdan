@@ -114,7 +114,7 @@ function TraCuuContent() {
                   type="text"
                   value={trackCode}
                   onChange={(e) => setTrackCode(e.target.value)}
-                  placeholder="Nhập mã tra cứu (Ví dụ: QD-1234)"
+                  placeholder="Nhập mã tra cứu (Ví dụ: QK2-1234)"
                   className="w-full bg-white text-slate-900 border border-slate-200 focus:border-qd-green px-4 py-3 rounded-xl text-sm transition-all duration-200 outline-none uppercase font-mono tracking-wider placeholder:normal-case placeholder:font-sans"
                   required
                 />

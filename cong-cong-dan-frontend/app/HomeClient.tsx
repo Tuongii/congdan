@@ -602,7 +602,7 @@ export default function HomeClient() {
               ) : (
                 (() => {
                   const filteredList = vanBanList.filter(item => item.loaiVanBan === activeTab);
-                  
+
                   if (filteredList.length === 0) {
                     return (
                       <div className="text-center p-8 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200 text-slate-400 text-xs">
@@ -639,13 +639,13 @@ export default function HomeClient() {
                           </p>
                         </div>
                         <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-                          <span>📥 Định dạng: {item.tepVanBan?.ext?.toUpperCase()?.replace('.', '') || 'PDF'} ({( (item.tepVanBan?.size || 0) / 1024 ).toFixed(1)} MB)</span>
+                          <span>📥 Định dạng: {item.tepVanBan?.ext?.toUpperCase()?.replace('.', '') || 'PDF'} ({((item.tepVanBan?.size || 0) / 1024).toFixed(1)} MB)</span>
                           {item.tepVanBan ? (
-                            <a 
-                              href={fileUrl} 
-                              download 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
+                            <a
+                              href={fileUrl}
+                              download
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className={`font-bold hover:underline ${isLegal ? 'text-qd-green' : 'text-amber-600'}`}
                             >
                               Tải văn bản gốc →

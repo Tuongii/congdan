@@ -7,13 +7,13 @@ import { factories } from '@strapi/strapi';
 
 export default factories.createCoreController('api::tncdtt.tncdtt', ({ strapi }) => ({
   async create(ctx) {
-    // Sinh mã tra cứu unique dạng QD-XXXX
+    // Sinh mã tra cứu unique dạng QK2-XXXX
     let maTraCuu: string;
     let isUnique = false;
 
     do {
       const randomNum = Math.floor(1000 + Math.random() * 9000);
-      maTraCuu = `QD-${randomNum}`;
+      maTraCuu = `QK2-${randomNum}`;
 
       // Kiểm tra mã đã tồn tại chưa
       const existing = await strapi.documents('api::tncdtt.tncdtt').findMany({
