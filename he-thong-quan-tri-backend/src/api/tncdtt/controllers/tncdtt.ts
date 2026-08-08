@@ -25,11 +25,15 @@ export default factories.createCoreController('api::tncdtt.tncdtt', ({ strapi })
       }
     } while (!isUnique);
 
-    // Gán mã tra cứu và trạng thái mặc định vào dữ liệu request
+    // Gán mã tra cứu và trạng thái mặc định vào dữ liệu request (nếu chưa có)
     const requestBody = ctx.request.body as { data?: Record<string, unknown> };
     if (requestBody.data) {
-      requestBody.data.maTraCuu = maTraCuu;
-      requestBody.data.trangThai = 'moi';
+      if (!requestBody.data.maTraCuu) {
+        requestBody.data.maTraCuu = maTraCuu;
+      }
+      if (!requestBody.data.trangThai) {
+        requestBody.data.trangThai = 'moi';
+      }
     } else {
       requestBody.data = {
         maTraCuu,

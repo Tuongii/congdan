@@ -41,16 +41,16 @@ Remove-Item "$PROJECT_DIR\frontend.tar.gz" -ErrorAction SilentlyContinue
 
 Write-Host "  Frontend uploaded!" -ForegroundColor Green
 
-# Bước 4: Upload database (nếu có)
-$dbFile = "$backendSource\.tmp\data.db"
-if (Test-Path $dbFile) {
-    Write-Host "`n[4/4] Upload database..." -ForegroundColor Yellow
-    ssh ${VPS_USER}@${VPS_IP} "mkdir -p /var/www/phongtiepdantructruyen/backend/.tmp"
-    scp "$dbFile" "${VPS_USER}@${VPS_IP}:/var/www/phongtiepdantructruyen/backend/.tmp/data.db"
-    Write-Host "  Database uploaded!" -ForegroundColor Green
-} else {
-    Write-Host "`n[4/4] Khong tim thay database, bo qua..." -ForegroundColor Gray
-}
+# Bước 4: Kiểm tra và khởi tạo Database trên VPS (Chỉ chép nếu VPS CHƯA CÓ database, KHÔNG ghi đè dữ liệu sản xuất)
+Write-Host "`n[4/4] Kiem tra Database tren VPS..." -ForegroundColor Yellow
+ssh ${VPS_USER}@${VPS_IP} "
+  mkdir -p /var/www/phongtiepdantructruyen/backend/.tmp
+  if [ ! -f /var/www/phongtiepdantructruyen/backend/.tmp/data.db ]; then
+    echo 'Khong tim thay database tren VPS, se khoi tao tu local...'
+  else
+    echo 'Database da ton tai tren VPS (Bao ve du lieu an toan, KHONG ghi de).'
+  fi
+"
 
 Write-Host "`n========================================" -ForegroundColor Cyan
 Write-Host "  UPLOAD HOAN TAT!" -ForegroundColor Green
