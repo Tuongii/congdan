@@ -322,7 +322,7 @@ export default function PhanHoiPage({ params }: { params: Promise<{ documentId: 
                   }`}>
                     {entry?.loaiYeuCau === "kien_nghi_phan_anh" ? "📋 Kiến nghị / Phản ánh" :
                      entry?.loaiYeuCau === "che_do_chinh_sach" ? "🎖️ Chế độ chính sách" :
-                     entry?.loaiYeuCau === "xac_nhan_cong_tac" ? "💂 Xác nhận công tác" :
+                     entry?.loaiYeuCau === "xac_nhan_cong_tac" ? "💂 Tuyển quân, tuyển sinh" :
                      entry?.loaiYeuCau === "dat_lich_hen" ? "📅 Đặt lịch hẹn" :
                      entry?.loaiYeuCau}
                   </span>

@@ -19,17 +19,17 @@ const LOAI_YEU_CAU_OPTIONS = [
   },
   {
     value: "che_do_chinh_sach",
-    label: "Thông tin, giải quyết chế độ chính sách",
+    label: "Giải quyết chế độ chính sách",
     icon: "🎖️",
     color: "amber",
     description: "Tra cứu, giải quyết chế độ chính sách quân nhân, người có công, phục viên, hậu phương quân đội..."
   },
   {
     value: "xac_nhan_cong_tac",
-    label: "Xác nhận thông tin, quá trình công tác của quân nhân",
+    label: "Tư vấn tuyển quân, tuyển sinh",
     icon: "💂",
     color: "blue",
-    description: "Xác nhận thông tin quân nhân, quá trình công tác, phục vụ tại đơn vị..."
+    description: "Tư vấn thủ tục tuyển quân, tuyển sinh quân sự, đào tạo nghề, nghĩa vụ quân sự..."
   },
   {
     value: "dat_lich_hen",

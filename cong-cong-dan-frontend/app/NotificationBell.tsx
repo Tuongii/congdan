@@ -220,7 +220,7 @@ export default function NotificationBell() {
                   <h5 className="text-xs font-bold text-slate-700 leading-snug line-clamp-2 mb-1.5 group-hover:text-slate-900">
                     {item.title}
                   </h5>
-                  
+
                   {item.phanHoi && (
                     <div className="bg-slate-50 border border-slate-100 rounded-lg p-2 text-[10px] text-slate-600 font-medium leading-relaxed mb-1.5 italic">
                       💬 Phản hồi: {item.phanHoi.substring(0, 70)}

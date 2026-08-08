@@ -169,8 +169,8 @@ Trang chủ của Cổng thông tin được chia thành các phân khu chức n
     *(Người dân có thể nhấn vào biểu tượng Micro 🎙️ ở mỗi ô để nói, hệ thống sẽ tự điền văn bản).*
 5.  **Chọn loại yêu cầu cần giải quyết**: Nhấn chọn 1 trong 4 loại yêu cầu sau:
     *   📋 *Kiến nghị / Phản ánh*: Phản ánh các vấn đề phát sinh, kiến nghị cải tiến hoạt động.
-    *   🎖️ *Thông tin, giải quyết chế độ chính sách*: Hỏi đáp, giải quyết chế độ quân nhân, người có công, phục viên, hậu phương quân đội.
-    *   💂 *Xác nhận thông tin, quá trình công tác của quân nhân*: Đề nghị xác nhận quá trình công tác, phục vụ tại đơn vị để giải quyết thủ tục hành chính.
+    *   🎖️ *Giải quyết chế độ chính sách*: Hỏi đáp, giải quyết chế độ quân nhân, người có công, phục viên, hậu phương quân đội.
+    *   💂 *Tư vấn tuyển quân, tuyển sinh*: Tư vấn thủ tục tuyển quân, tuyển sinh quân sự, đào tạo nghề, nghĩa vụ quân sự.
     *   📅 *Đăng ký lịch tiếp dân*: Đặt lịch hẹn gặp trực tiếp hoặc trực tuyến với Thủ trưởng cơ quan. (Khi chọn loại này, khối thông tin lịch hẹn gồm Ngày hẹn mong muốn, Khung giờ và Hình thức tiếp kiến sẽ tự động hiển thị để người dân điền thông tin).
 6.  **Nhập tiêu đề và Nội dung chi tiết**: Gõ nội dung phản ánh hoặc sử dụng Micro 🎙️ để đọc lời viết đơn.
 7.  **Đính kèm tài liệu bằng chứng**: Kéo thả hoặc click chọn tối đa 5 tệp tin bằng chứng (ảnh chụp, file PDF, tài liệu Word với dung lượng mỗi file dưới 10MB).

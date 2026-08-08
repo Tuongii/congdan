@@ -154,52 +154,71 @@ export async function submitCitizenForm(formData: CitizenFormData): Promise<Tncd
 }
 
 /**
- * Tra cứu đơn theo mã tra cứu
+ * Tra cứu đơn theo mã tra cứu (Hỗ trợ cả QD- cũ và QK2- mới)
  */
 export async function lookupByTrackCode(maTraCuu: string): Promise<TncdttEntry | null> {
-  const response = await fetch(
-    `${STRAPI_URL}/api/tncdtts?filters[maTraCuu][$eq]=${encodeURIComponent(maTraCuu)}&populate=taiLieuDinhKem`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+  try {
+    const searchCode = maTraCuu.trim().toUpperCase();
+    let filterQuery = `filters[maTraCuu][$eq]=${encodeURIComponent(searchCode)}`;
+    
+    // Hỗ trợ tra cứu các đơn cũ lưu mã QD-
+    if (searchCode.startsWith('QD-')) {
+      const qk2Code = searchCode.replace('QD-', 'QK2-');
+      filterQuery = `filters[$or][0][maTraCuu][$eq]=${encodeURIComponent(searchCode)}&filters[$or][1][maTraCuu][$eq]=${encodeURIComponent(qk2Code)}`;
     }
-  );
 
-  if (!response.ok) {
-    throw new Error(`Lỗi tra cứu: ${response.status}`);
-  }
+    const response = await fetch(
+      `${STRAPI_URL}/api/tncdtts?${filterQuery}&populate=taiLieuDinhKem`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
-  const result: StrapiResponse<TncdttEntry[]> = await response.json();
+    if (!response.ok) {
+      return null;
+    }
 
-  if (result.data.length === 0) {
+    const result: StrapiResponse<TncdttEntry[]> = await response.json();
+
+    if (!result.data || result.data.length === 0) {
+      return null;
+    }
+
+    return result.data[0];
+  } catch (error) {
+    console.warn(`[API] Kết nối máy chủ tra cứu mã ${maTraCuu} tạm gián đoạn`);
     return null;
   }
-
-  return result.data[0];
 }
 
 /**
  * Lấy tất cả đơn tiếp công dân (dùng cho trang quản trị / xuất Excel)
  */
 export async function fetchAllSubmissions(): Promise<TncdttEntry[]> {
-  const response = await fetch(
-    `${STRAPI_URL}/api/tncdtts?sort=createdAt:desc&pagination[pageSize]=1000&populate=taiLieuDinhKem`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+  try {
+    const response = await fetch(
+      `${STRAPI_URL}/api/tncdtts?sort=createdAt:desc&pagination[pageSize]=1000&populate=taiLieuDinhKem`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      return [];
     }
-  );
 
-  if (!response.ok) {
-    throw new Error(`Lỗi tải dữ liệu: ${response.status}`);
+    const result: StrapiResponse<TncdttEntry[]> = await response.json();
+    return result.data || [];
+  } catch (error) {
+    console.warn('[API] Kết nối máy chủ danh sách đơn tạm gián đoạn');
+    return [];
   }
-
-  const result: StrapiResponse<TncdttEntry[]> = await response.json();
-  return result.data;
 }
 
 /**
@@ -272,19 +291,24 @@ export interface VanBanPhapQuyEntry {
  * Lấy tất cả văn bản pháp quy từ backend
  */
 export async function fetchVanBanPhapQuy(): Promise<VanBanPhapQuyEntry[]> {
-  const response = await fetch(`${STRAPI_URL}/api/van-ban-phap-quys?populate=tepVanBan&sort=createdAt:desc`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    const response = await fetch(`${STRAPI_URL}/api/van-ban-phap-quys?populate=tepVanBan&sort=createdAt:desc`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`Lỗi tải văn bản pháp quy: ${response.status}`);
+    if (!response.ok) {
+      return [];
+    }
+
+    const result: StrapiResponse<VanBanPhapQuyEntry[]> = await response.json();
+    return result.data || [];
+  } catch (error) {
+    console.warn('[API] Kết nối máy chủ tải văn bản pháp quy tạm gián đoạn');
+    return [];
   }
-
-  const result: StrapiResponse<VanBanPhapQuyEntry[]> = await response.json();
-  return result.data;
 }
 
 /**
@@ -372,19 +396,24 @@ export interface TinNoiBatEntry {
  * Lấy tất cả tin tức nổi bật từ backend
  */
 export async function fetchTinNoiBat(): Promise<TinNoiBatEntry[]> {
-  const response = await fetch(`${STRAPI_URL}/api/tin-noi-bats?populate=hinhAnh&sort=createdAt:desc`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    const response = await fetch(`${STRAPI_URL}/api/tin-noi-bats?populate=hinhAnh&sort=createdAt:desc`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`Lỗi tải tin nổi bật: ${response.status}`);
+    if (!response.ok) {
+      return [];
+    }
+
+    const result: StrapiResponse<TinNoiBatEntry[]> = await response.json();
+    return result.data || [];
+  } catch (error) {
+    console.warn('[API] Kết nối máy chủ tải tin nổi bật tạm gián đoạn');
+    return [];
   }
-
-  const result: StrapiResponse<TinNoiBatEntry[]> = await response.json();
-  return result.data;
 }
 
 /**
